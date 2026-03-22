@@ -5,12 +5,24 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
 
+
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate();
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/auth/google`)
+      console.log(res.data)
+      window.location.href = res.data.url;
+    } catch (error) {
+      setError(error.response?.data?.message || 'Something went wrong. Please try again.');
+      console.log(error)
+    }
+  }
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -119,6 +131,7 @@ const SignIn = () => {
           {/* Google SignIn */}
           <button
             type="button"
+            onClick={handleGoogleSignIn}
             className='w-full px-4 py-3 bg-white text-green-600 font-bold rounded-xl shadow-lg hover:shadow-xl hover:from-green-700 hover:to-green-600 active:scale-95 transition-all duration-200 text-base tracking-wide'
           >
             <FcGoogle className='inline-block mr-2' />

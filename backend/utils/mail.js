@@ -4,9 +4,7 @@ dotenv.config()
 
 //Create Transporter
 const transporter = nodemailer.createTransport({
-  host: "Gmail",
-  port: 465, 
-  secure: true, 
+  service: "gmail",
   auth: {
     user:process.env.EMAIL_USER,
     pass:process.env.EMAIL_PASS,
@@ -35,6 +33,7 @@ export const sendOtpMail = async (email,otp)=>{
       `
     })
   } catch (error) {
-    console.log(error)
+    console.log("Nodemailer error:", error);
+    throw error;
   }
 }
