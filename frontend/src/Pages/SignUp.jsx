@@ -4,6 +4,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -14,6 +16,36 @@ const SignUp = () => {
   const[phone,setPhone] = useState("")
   const[password,setPassword] = useState("")
   const[error,setError] = useState("")
+
+  const handleGoogleSignIn = async () =>{
+    if(!phone){
+      return alert("Mobile no is required before Google Sign-In");
+    }
+    
+    const roleMap = {
+      "Customer": "user",
+      "Delivery Partner": "deliveryBoy",
+      "Shop Owner": "owner"
+    };
+
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth,provider)
+      
+      const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
+        fullName: result.user.displayName,
+        email: result.user.email,
+        role: roleMap[selectedRole] || "user",
+        mobile: phone
+      },{withCredentials:true})
+      
+      console.log("Google Sign-In Success:", data);
+      navigate("/");
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      setError(error.response?.data?.message || "Google Sign-In failed");
+    }
+  }
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -173,6 +205,7 @@ const SignUp = () => {
 
           {/* Google SignUp */}
           <button
+          onClick={handleGoogleSignIn}
             type="button"
             className='w-full px-4 py-3 bg-white text-green-600 font-bold rounded-xl shadow-lg hover:shadow-xl hover:from-green-700 hover:to-green-600 active:scale-95 transition-all duration-200 text-base tracking-wide'
           >

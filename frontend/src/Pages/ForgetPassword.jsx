@@ -15,9 +15,7 @@ const ForgetPassword = () => {
 
     const handleSendOtp = async () => {
      try {
-      const res = await axios.post(`${serverUrl}/api/auth/sendotp`,{
-        email
-      },{
+      const res = await axios.post(`${serverUrl}/api/auth/sendotp`,{email},{
         withCredentials:true
       })
       console.log(res.data)
@@ -27,12 +25,27 @@ const ForgetPassword = () => {
      }
     }
 
-    const handleVerifyOtp = () => {
-      setStep(3);
+    const handleVerifyOtp = async () =>{
+      try {
+        const result = await axios.post(`${serverUrl}/api/auth/verifyotp`,{email,otp},{
+          withCredentials:true
+        })
+        console.log(result.data)
+        setStep(3)
+      } catch (error) {
+        console.log(error)
+      }
     }
 
-    const handleResetPassword = () => {
-      setStep(1);
+    const handleResetPassword = async () =>{
+      try {
+        const result = await axios.post(`${serverUrl}/api/auth/resetpassword`,{email,otp,password},{withCredentials:true})
+        console.log(result.data)
+        setStep(1)
+        navigate("/signin")
+      } catch (error) {
+        console.log(error)
+      }
     }
 
   return (
